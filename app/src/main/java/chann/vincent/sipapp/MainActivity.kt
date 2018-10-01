@@ -14,7 +14,9 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
+import android.view.View
 import android.widget.Button
+import android.widget.ScrollView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.text.ParseException
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     var registrationSuccess = false
     var builder: SipProfile.Builder? = null
     var call: SipAudioCall? = null
+    var lineCount = 1
 
     val PERMISSION_CODE_SIP: Int = 2000
 
@@ -45,6 +48,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.USE_SIP) != PackageManager.PERMISSION_GRANTED) {
+            updateStatus("ask for permission")
+        }
+        else {
+            updateStatus("permission granted")
+        }
         setPermissionButton()
         val buttonPermission = findViewById<Button>(R.id.permission)
         buttonPermission.setOnClickListener {
@@ -69,6 +78,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (grantResults.getOrNull(0) == )
         updateStatus("permission granted")
     }
 
@@ -95,11 +105,14 @@ class MainActivity : AppCompatActivity() {
     fun updateStatus(status: String?) {
         runOnUiThread {
             val textView = findViewById<TextView>(R.id.text)
+            val scrollView = findViewById<ScrollView>(R.id.scroll_view)
             textView.movementMethod = ScrollingMovementMethod()
-            textView.text = textView.text.toString() + "\n" + status
+            textView.text = textView.text.toString() + "\n" + lineCount.toString() + " - " + status
+            scrollView.fullScroll(View.FOCUS_DOWN)
             setButtonCall()
             setButtonProfile()
             setPermissionButton()
+            lineCount++
         }
     }
 
@@ -108,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         if (useName == null) {
             useName = call.peerProfile.userName
         }
-        updateStatus(useName + "@" + call.peerProfile.sipDomain)
+        updateStatus("call established with " + useName + "@" + call.peerProfile.sipDomain)
     }
 
     fun askPermission(): Boolean {
@@ -126,12 +139,10 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.USE_SIP) != PackageManager.PERMISSION_GRANTED) {
             buttonPermission.isEnabled = true
             buttonPermission.text = "grant permission"
-            updateStatus("permission granted")
         }
         else {
             buttonPermission.isEnabled = false
             buttonPermission.text = "permission already granted"
-            // updateStatus("permission not granted")
         }
     }
 
@@ -164,7 +175,7 @@ class MainActivity : AppCompatActivity() {
             // listen for registration status
             mSipManager?.setRegistrationListener(mSipProfile?.uriString, object : SipRegistrationListener {
                 override fun onRegistering(p0: String?) {
-                    registrationSuccess = false
+                    // registrationSuccess = false
                     updateStatus("Registering with SIP Server...")
                 }
 
@@ -185,7 +196,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun initiateCall() {
-        updateStatus("initiateCall : " + sipAddress)
         try {
             val listener = object : SipAudioCall.Listener() {
                 // Much of the client's interaction with the SIP Stack will
@@ -203,21 +213,23 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            updateStatus("try to call : " + sipAddress)
             call = mSipManager?.makeAudioCall(mSipProfile?.uriString, sipAddress, listener, 30)
 
         } catch (e: Exception) {
-            Log.e("MainActivity", "Error when trying to close manager.", e)
+            updateStatus("fail to call : " + sipAddress)
             if (mSipProfile != null) {
                 try {
                     mSipManager?.close(mSipProfile?.uriString)
                 } catch (ee: Exception) {
-                    Log.e("MainActivity", "Error when trying to close manager.", ee)
+                    updateStatus("fail to close manager : " + sipAddress)
                     ee.printStackTrace()
                 }
 
             }
             if (call != null) {
                 call?.close()
+                updateStatus("close call : " + sipAddress)
             }
         }
 
