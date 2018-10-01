@@ -107,11 +107,11 @@ class MainActivity : AppCompatActivity() {
             val scrollView = findViewById<ScrollView>(R.id.scroll_view)
             textView.movementMethod = ScrollingMovementMethod()
             textView.text = textView.text.toString() + "\n" + lineCount.toString() + " - " + status
-            scrollView.fullScroll(View.FOCUS_DOWN)
             setButtonCall()
             setButtonProfile()
             setPermissionButton()
             lineCount++
+            scrollView.postDelayed({ scrollView.fullScroll(ScrollView.FOCUS_DOWN) }, 1000)
         }
     }
 
@@ -181,7 +181,6 @@ class MainActivity : AppCompatActivity() {
                 override fun onRegistrationDone(p0: String?, p1: Long) {
                     registrationSuccess = true
                     updateStatus("Ready")
-                    initiateCall()
                 }
 
                 override fun onRegistrationFailed(p0: String?, p1: Int, p2: String?) {

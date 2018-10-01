@@ -4,17 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="#fff">
 
     <ScrollView
         android:id="@+id/scroll_view"
-        android:layout_width="400dp"
+        android:layout_width="250dp"
         android:layout_height="200dp"
         android:background="#eee">
 
         <TextView
             android:id="@+id/text"
-            android:layout_width="400dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:text="Logs :"
             android:scrollbars="vertical"/>
