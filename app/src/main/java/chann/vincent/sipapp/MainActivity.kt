@@ -78,7 +78,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (grantResults.getOrNull(0) == )
         updateStatus("permission granted")
     }
 
@@ -182,6 +181,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onRegistrationDone(p0: String?, p1: Long) {
                     registrationSuccess = true
                     updateStatus("Ready")
+                    initiateCall()
                 }
 
                 override fun onRegistrationFailed(p0: String?, p1: Int, p2: String?) {
@@ -213,7 +213,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            updateStatus("try to call : " + sipAddress)
+            updateStatus("try to call : " + sipAddress + " with : " + mSipProfile?.uriString)
             call = mSipManager?.makeAudioCall(mSipProfile?.uriString, sipAddress, listener, 30)
 
         } catch (e: Exception) {
