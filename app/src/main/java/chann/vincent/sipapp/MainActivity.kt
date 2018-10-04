@@ -30,12 +30,12 @@ class MainActivity : AppCompatActivity() {
     private var mSipProfile: SipProfile? = null
 
     // dev1
-    val username = "8MTYpcU3H8"
-    val password = "rkYMgVI6TL"
+    val username = "1001"
+    val password = "hh3JzPGxDA"
     val domain = "bowo.3cx.samcloud.fr"
 
     // call to vincent
-    val sipAddress = "1001"
+    val sipAddress = "1000"
 
     var registrationSuccess = false
     var builder: SipProfile.Builder? = null
